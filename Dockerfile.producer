@@ -1,0 +1,6 @@
+FROM python:3.12.3
+RUN pip install --no-cache-dir confluent-kafka
+WORKDIR /app
+COPY scripts/producer.py .
+COPY data/source/ ./data/
+CMD ["python", "producer.py"]

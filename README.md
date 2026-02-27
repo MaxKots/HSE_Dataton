@@ -92,7 +92,7 @@ POSTGRES_AF_DB=airflow
 MINIO_USER=***USER***
 MINIO_PASSWORD=***PASSWORD***
 
-FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+FERNET_KEY=***KEY***
 EOF
 
 echo " Файлик .env заполнен"

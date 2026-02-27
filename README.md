@@ -45,8 +45,8 @@ echo "creating project structure in ./$PROJECT"
 
 mkdir -p "$PROJECT"/{dags,spark/jobs,data/source,scripts}
 
-touch "$PROJECT"/dags/.gitkeep
-touch "$PROJECT"/spark/jobs/.gitkeep
+touch "$PROJECT"/dags/.gitkeep #чтоб проблем с гитом не было
+touch "$PROJECT"/spark/jobs/.gitkeep #чтоб проблем с гитом не было
 touch "$PROJECT"/docker-compose.yml
 touch "$PROJECT"/.env
 touch "$PROJECT"/scripts/producer.py
@@ -56,6 +56,9 @@ echo "Заебумба, структура создана"
 find "$PROJECT"
 ```
 </details>
+
+Закинь csv из архива коллег по пути:
+.../project/data/source
 
 Во избежание явного отображения паролей в connections без кодированя паролей и прочих чувствительных данных в Airflow, создал рандомный fernet_key:
 
@@ -75,9 +78,6 @@ PROJECT="project"
 
 echo "Заполняю .env"
 
-# ─────────────────────────────────
-#  .env
-# ─────────────────────────────────
 cat > "$PROJECT/.env" << 'EOF'
 AIRFLOW_UID=50000
 
@@ -365,7 +365,7 @@ docker compose logs -f producer consumer
 docker compose down -v
 ```
 
-Как войти в сервисы:
+## Как войти в сервисы:
 
 ```text
 

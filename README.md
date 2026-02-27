@@ -324,6 +324,34 @@ echo " Файлик scripts/consumer.py заполнен"
 ```
 </details>
 
+Так как мой docker не понимает docker-inline, созхдал отдельные docker-файлы для консьюмера и продюсера:
+
+<details> <summary><b>Башник для заполнения docker-файлов консьюмера и продюсера</b></summary>
+
+```Bash
+#!/usr/bin/env bash
+
+# 1 продюсер
+cat > Dockerfile.producer <<EOF
+FROM python:3.12.3
+RUN pip install --no-cache-dir confluent-kafka
+WORKDIR /app
+COPY scripts/producer.py .
+COPY data/source/ ./data/
+CMD ["python", "producer.py"]
+EOF
+
+# 2 консьюмер
+cat > Dockerfile.consumer <<EOF
+FROM python:3.12.3
+RUN pip install --no-cache-dir confluent-kafka minio pyarrow pandas
+WORKDIR /app
+COPY scripts/consumer.py .
+CMD ["python", "consumer.py"]
+EOF
+```
+</details>
+
 Как запустить:
 
 ```text

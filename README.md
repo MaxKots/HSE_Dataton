@@ -352,13 +352,13 @@ EOF
 ```
 </details>
 
-Как запустить:
+### Как запустить:
 
 ```text
 
 docker compose up -d
 
-посмотрие там происходит
+посмотри там происходит
 docker compose logs -f producer consumer
 
 останови

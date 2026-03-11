@@ -1,0 +1,5 @@
+flask-cors
+Authlib
+openpyxl
+Pillow
+psycopg2-binary

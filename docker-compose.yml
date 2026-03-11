@@ -26,6 +26,12 @@ x-airflow: &airflow-base
   networks:
     - dv
 
+x-superset-volumes: &superset-volumes
+  - ./superset/docker/requirements-local.txt:/app/docker/requirements-local.txt:ro
+  - ./superset/docker/pythonpath:/app/pythonpath
+  - superset_home_staging_6:/app/superset_home
+
+
 services:
 
   #  Postgres для метаданных airflow
@@ -323,6 +329,104 @@ services:
     networks:
       - dv
 
+
+######## BI #########
+  redis:
+    image: redis:7
+    container_name: superset_cache
+    restart: unless-stopped
+    volumes:
+      - redis_staging_6:/data
+
+  db:
+    env_file:
+      - path: ./superset/docker/.env # default
+        required: true
+    image: postgres:16
+    container_name: superset_db
+    restart: unless-stopped
+    volumes:
+      - db_home_staging_6:/var/lib/postgresql/data
+      - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  superset:
+    env_file:
+      - path: ./superset/docker/.env # default
+        required: true
+    build:
+      context: .
+      dockerfile: ./superset/Dockerfile
+    container_name: superset_app
+    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+    user: "root"
+    restart: unless-stopped
+    ports:
+      - 8088:8088
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    volumes: *superset-volumes
+
+  superset-init:
+    build:
+      context: .
+      dockerfile: ./superset/Dockerfile
+    container_name: superset_init
+    command: ["/app/docker/docker-init.sh"]
+    env_file:
+      - path: ./superset/docker/.env # default
+        required: true
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+    user: "root"
+    volumes: *superset-volumes
+    healthcheck:
+      disable: true
+
+  superset-worker:
+    build:
+      context: .
+      dockerfile: ./superset/Dockerfile
+    container_name: superset_worker
+    command: ["/app/docker/docker-bootstrap.sh", "worker"]
+    env_file:
+      - path: ./superset/docker/.env # default
+        required: true
+    restart: unless-stopped
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    user: "root"
+    volumes: *superset-volumes
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME",
+        ]
+
+  superset-worker-beat:
+    build:
+      context: .
+      dockerfile: ./superset/Dockerfile
+    container_name: superset_worker_beat
+    command: ["/app/docker/docker-bootstrap.sh", "beat"]
+    env_file:
+      - path: ./superset/docker/.env # default
+        required: true
+    restart: unless-stopped
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    user: "root"
+    volumes: *superset-volumes
+    healthcheck:
+      disable: true
+
+
 volumes:
   af-pg:
   dwh-pg:
@@ -331,6 +435,12 @@ volumes:
   kafka-data:
   minio-data:
   af-logs:
+  superset_home_staging_6:
+    external: false
+  db_home_staging_6:
+    external: false
+  redis_staging_6:
+    external: false
 
 networks:
   dv:

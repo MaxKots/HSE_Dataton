@@ -1,0 +1,16 @@
+﻿banner_id;creative_type (статика/видео/анимация);message (сообщение на баннере);size;target_audience_segment
+1;video;Сервис;300x250;value
+2;rich;Новинка;300x250;youth
+3;static;Эмоция;300x250;youth
+4;static;Выигрыш;1080x1920;family
+5;static;Эмоция;1080x1920;youth
+6;video;Польза;1080x1920;family
+7;static;Сервис;1080x1920;family
+8;static;Польза;320x50;family
+9;static;Сервис;300x250;youth
+10;static;Польза;1080x1920;family
+11;static;Скидка;300x250;youth
+12;video;Эмоция;300x250;family
+13;video;Сервис;300x250;value
+14;video;Новинка;300x250;value
+15;video;Эмоция;1080x1920;youth
